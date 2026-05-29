@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef } from "react";
 
+declare global {
+  interface Window {
+    DRIVENOW_WIDGET_THEME?: string;
+  }
+}
+
 const waholidayguideWidgetConfig = {
   widgetType: "TabbedSearchWidget",
   affiliateCode: "waholidayguide.com.au",
@@ -43,20 +49,20 @@ export function WaHolidayGuidePage() {
           </div>
 
           <aside className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
-            <strong className="block text-card-foreground">Local dependency</strong>
-            Loads the widget script from <code>www.drivenow.com.au</code>.
+            <strong className="block text-card-foreground">Production script</strong>
+            Loads the production widget script from <code>www.drivenow.com.au</code> and applies the WA Holiday Guide theme.
           </aside>
         </div>
 
         <section className="mt-10 rounded-xl border border-border bg-card p-6 shadow-card" data-testid="waholidayguide-widget-story">
-          <AffiliateWidget config={config} scriptSrc="https://www.drivenow.com.au/oxide/widget/waholidayguide.js" />
+          <AffiliateWidget config={config} scriptSrc="https://www.drivenow.com.au/oxide/widget.js?gen=1" theme="waholidayguide" />
         </section>
       </div>
     </div>
   );
 }
 
-function AffiliateWidget({ config, scriptSrc }: { config: string; scriptSrc: string }) {
+function AffiliateWidget({ config, scriptSrc, theme }: { config: string; scriptSrc: string; theme?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -64,6 +70,10 @@ function AffiliateWidget({ config, scriptSrc }: { config: string; scriptSrc: str
     if (!container) return;
 
     container.replaceChildren();
+
+    if (theme) {
+      window.DRIVENOW_WIDGET_THEME = theme;
+    }
 
     const script = document.createElement("script");
     script.src = scriptSrc;
@@ -76,7 +86,7 @@ function AffiliateWidget({ config, scriptSrc }: { config: string; scriptSrc: str
     return () => {
       container.replaceChildren();
     };
-  }, [config, scriptSrc]);
+  }, [config, scriptSrc, theme]);
 
   return <div ref={containerRef} />;
 }
