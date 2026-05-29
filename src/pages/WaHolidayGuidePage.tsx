@@ -55,14 +55,34 @@ export function WaHolidayGuidePage() {
         </div>
 
         <section className="mt-10 rounded-xl border border-border bg-card p-6 shadow-card" data-testid="waholidayguide-widget-story">
-          <AffiliateWidget config={config} scriptSrc="https://www.drivenow.com.au/oxide/widget.js?gen=1" theme="waholidayguide" />
+          <WaHolidayGuideWidget config={config} />
         </section>
       </div>
     </div>
   );
 }
 
-function AffiliateWidget({ config, scriptSrc, theme }: { config: string; scriptSrc: string; theme?: string }) {
+function WaHolidayGuideWidget({ config }: { config: string }) {
+  return (
+    <AffiliateWidget
+      config={config}
+      scriptSrc="https://www.drivenow.com.au/oxide/widget.js?gen=1"
+      beforeLoad={() => {
+        window.DRIVENOW_WIDGET_THEME = "waholidayguide";
+      }}
+    />
+  );
+}
+
+function AffiliateWidget({
+  config,
+  scriptSrc,
+  beforeLoad,
+}: {
+  config: string;
+  scriptSrc: string;
+  beforeLoad?: () => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -71,9 +91,7 @@ function AffiliateWidget({ config, scriptSrc, theme }: { config: string; scriptS
 
     container.replaceChildren();
 
-    if (theme) {
-      window.DRIVENOW_WIDGET_THEME = theme;
-    }
+    beforeLoad?.();
 
     const script = document.createElement("script");
     script.src = scriptSrc;
@@ -86,7 +104,7 @@ function AffiliateWidget({ config, scriptSrc, theme }: { config: string; scriptS
     return () => {
       container.replaceChildren();
     };
-  }, [config, scriptSrc, theme]);
+  }, [beforeLoad, config, scriptSrc]);
 
   return <div ref={containerRef} />;
 }
