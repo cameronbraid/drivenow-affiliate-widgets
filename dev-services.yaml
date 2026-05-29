@@ -1,0 +1,14 @@
+version: "0.5"
+
+processes:
+  vite:
+    command: pnpm exec vite --host 0.0.0.0 --port 3004
+    shutdown:
+      signal: 15
+      timeout_seconds: 10
+    readiness_probe:
+      exec:
+        command: bash -c "echo > /dev/tcp/localhost/3004"
+      initial_delay_seconds: 2
+      period_seconds: 1
+      failure_threshold: 120

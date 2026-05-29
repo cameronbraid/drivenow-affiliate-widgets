@@ -1,0 +1,3 @@
+[tools]
+node = "latest"
+"github:F1bonacc1/process-compose" = "latest"
